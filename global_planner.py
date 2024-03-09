@@ -105,17 +105,19 @@ class RRTAlgorithm():
         self.retraceRRTPath(goal.parent)
         
 #Loading the image
-gray_image = cv2.imread("mapkgp.png", 0)
+gray_image = cv2.imread("map_image.png", 0)
 kernel = np.ones((5, 5), np.uint8) 
-img_dia = cv2.dilate(gray_image, kernel, iterations=1) 
+img_erosion = cv2.erode(gray_image, kernel, iterations=1) 
 
 # making binary
-threshold_value = 254
-_, grid = cv2.threshold(img_dia, threshold_value, 255, cv2.THRESH_BINARY)
+threshold_value = 220
+_, inverted_binary_map = cv2.threshold(img_erosion, threshold_value, 255, cv2.THRESH_BINARY)
+
+grid = cv2.bitwise_not(inverted_binary_map)
 
 # Define parameters
-start = np.array([270,369]) # Starting point
-goal = np.array([811,403])  # Goal point
+start = np.array([674, 333])  # Starting point
+goal = np.array([1291, 370])  # Goal point
 
 stepSize = 15
 goalRegion = plt.Circle((goal[0], goal[1]), stepSize, color='b', fill = False)
@@ -163,3 +165,5 @@ print("Waypoints: ", rrt.Waypoints)
 for i in range(len(rrt.Waypoints)-1):
     plt.plot([rrt.Waypoints[i][0], rrt. Waypoints[i+1][0]], [rrt. Waypoints[i][1], rrt.Waypoints[i+1][1]], 'ro',linestyle="--")
     plt.pause(0.10)
+    
+cv2.waitKey(3000)
