@@ -1,5 +1,5 @@
 import cv2
-import numpy
+import numpy as np
 
 def hough_lines(edges, rho_resolution=1, theta_resolution=1, threshold=100):
     height, width = edges.shape

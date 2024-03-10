@@ -1,16 +1,17 @@
 import cv2
 import numpy as np
 import sobeledge
+import os
 
-# Define video file path (adjust as needed)
-video_path = "Videos/1.mp4"
+my_path = os.path.abspath(os.path.dirname(__file__))
+filenumber = str(input("Which video to open? (1, 2, or 3):\n"))
 
-# Open the video capture object
-vid = cv2.VideoCapture(video_path)
+path = os.path.join(my_path, "Videos",filenumber+".mp4")
+vid = cv2.VideoCapture(path)
 
 # Check if video opened successfully
 if not vid.isOpened():
-    print("Error opening video:", video_path)
+    print("Error opening video:", path)
     exit()
 
 # Create MOG2 background subtractor for motion detection

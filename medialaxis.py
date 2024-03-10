@@ -5,7 +5,9 @@ import os
 import hough
 
 my_path = os.path.abspath(os.path.dirname(__file__))
-path = os.path.join(my_path, "Videos/1.mp4")
+filenumber = str(input("Which video to open? (1, 2, or 3):\n"))
+
+path = os.path.join(my_path, "Videos",filenumber+".mp4")
 vid = cv2.VideoCapture(path)              #video input
 
 subtractor= cv2.createBackgroundSubtractorKNN()     #creating subtractor object
@@ -20,9 +22,15 @@ while(1):
     #fg=cv2.erode(fg,kernel,iterations=1)            #applying morphological tranforms to clean up the image
 
     feed=edgedetection.detectedges(fg,padding=1,stride=1,threshold=100)
-    lines=hough.getlines(feed, threshold=0, theta_threshold=1, r_threshold=1)
 
+    lines=hough.hough_lines(feed, rho_resolution=2, theta_resolution=6, threshold=100)
+    groupedlines=hough.group_lines_by_angle(lines)
+    longestgroup=hough.find_longest_group(grouped_lines=groupedlines)
+
+    hough.draw_mean_line(img, longestgroup)
+    '''lines=hough.getlines(feed, threshold=0, theta_threshold=1, r_threshold=1)
     hough.drawlines(img, lines, threshold=50, length=5, thickness=1)
+    '''
 
     cv2.imshow("Video",img)
     if cv2.waitKey(30) == 27:
