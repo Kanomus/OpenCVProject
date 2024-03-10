@@ -22,7 +22,7 @@ while(1):
     feed=edgedetection.detectedges(fg,padding=1,stride=1,threshold=100)
     lines=hough.getlines(feed, threshold=0, theta_threshold=1, r_threshold=1)
 
-    hough.drawlines(img, lines, 50, 10, 2)
+    hough.drawlines(img, lines, threshold=50, length=5, thickness=1)
 
     cv2.imshow("Video",img)
     if cv2.waitKey(30) == 27:
