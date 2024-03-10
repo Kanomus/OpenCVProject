@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import sobeledge
+import os
 
 def hough_lines(edges, rho_resolution=1, theta_resolution=1, threshold=100):
     height, width = edges.shape
@@ -61,11 +62,14 @@ def draw_mean_line(frame, lines):
         cv2.line(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
 
 # Define video file path
-video_path = "Videos/1.mp4"
-vid = cv2.VideoCapture(video_path)
+my_path = os.path.abspath(os.path.dirname(__file__))
+filenumber = str(input("Which video to open? (1, 2, or 3):\n"))
+
+path = os.path.join(my_path, "Videos",filenumber+".mp4")
+vid = cv2.VideoCapture(path)              #video input
 
 if not vid.isOpened():
-    print("Error opening video:", video_path)
+    print("Error opening video:", path)
     exit()
 
 subtractor = cv2.createBackgroundSubtractorKNN()
