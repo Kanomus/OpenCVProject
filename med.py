@@ -22,7 +22,7 @@ def hough_lines(edges, rho_resolution=1, theta_resolution=1, threshold=100):
     lines = [(rho_index * rho_resolution, thetas[theta_index]) for rho_index, theta_index in zip(*peaks)]
     return lines
 
-def group_lines_by_angle(lines, theta_tolerance=np.pi/36):
+def group_lines_by_angle(lines, theta_tolerance=np.pi/9):
     grouped_lines = []
     for rho, theta in lines:
         # Check if there's any group that this line belongs to based on angle
