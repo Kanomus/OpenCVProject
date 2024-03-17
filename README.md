@@ -1,3 +1,4 @@
+
 DOCUMENTATION
 
 Project 1
@@ -12,7 +13,7 @@ numpy: Library for numerical operations.
 
 Functions and Classes:
 cv2.VideoCapture: Opens the specified video file for reading.
-cv2.createBackgroundSubtractorKNN: Creates a background subtractor object using the K-nearest neighbors method.
+cv2.createBackgroundSubtractorKNN: Creates a background subtractor object using the K-nearest neighbours method.
 cv2.getStructuringElement: Generates a structuring element for morphological operations.
 cv2.imshow: Displays an image or video frame.
 cv2.waitKey: Waits for a key event for a specified amount of time.
@@ -34,36 +35,27 @@ cv2.waitKey: Waits for a key press to exit the loop.
 
 
 Hough Class:
-
 Purpose:
 This module contains functions for Hough line detection and line grouping.
-
 Functions:
 hough_lines(edges, rho_resolution=1, theta_resolution=1, threshold=100): Performs Hough line detection on edge-detected image.
 group_lines_by_angle(lines, theta_tolerance=np.pi/36): Groups detected lines based on similar angles.
 find_longest_group(grouped_lines): Finds the longest group of lines.
 draw_mean_line(frame, lines): Draws a mean line based on the detected lines.
 
-
-EdgeDetection Class :
-
-Purpose:
-This module contains a custom edge detection algorithm.
-
-Functions:
-detectedges(img, padding=0, stride=1, threshold=10): Detects edges in the input image using a custom edge detection method.
-
-Constants:
-verticalDifferentialKernel: Kernel for vertical differential operation.
-horizontalDifferentialKernel: Kernel for horizontal differential operation.
-
 Basic Working of the code:
 
 Firstly we are loading the video using VideoCapture(). Then we created a background substractor using createBackgroundSubtractorKNN() function. Then we created an infinite loop inside of which we read the frames of the video as image. Then we reduce the size of the image to make it easier to work with. Then we applied the background substractor to the image. Then we applied the cv2.erode function to reduce the noise.
 
  Then we used the sobel_edge_detection from the sobeledge.py folder to get the edges of the image. In sobel edge detection sobel_x and sobel_y are defined. The gradient is calculated by using filter2D function. Magnitude and Direction are also calculated. This edges are stored in edgemap which is typecasted to 8 bit integer and returned.
-Alternatively, 
-we can use edgedetection.py
+
+Alternatively, we can use edgedetection.py
+for edgedetection.py
+This module contains a custom edge detection algorithm.
+detectedges(img, padding=0, stride=1, threshold=10): Detects edges in the input image using a custom edge detection method.
+verticalDifferentialKernel: Kernel for vertical differential operation.
+horizontalDifferentialKernel: Kernel for horizontal differential operation.
+
 
 The new_img was made in order to check edges and hough lines. It is not used further in code.
 
@@ -71,7 +63,7 @@ The Hough lines are calculated by functions in hough.py
 The basic idea is to get lines then choose lines with similar angle in given tolerance. Then the longest group of lines is chosen and their mean line is calculated and drawn.
 
 The lines are got through the hough_lines  
-The function initializes an array called the accumulator. This array serves as a voting space, with cells corresponding to different combinations of rho (distance from the origin) and theta (angle from the horizontal axis). Each cell accumulates votes whenever a potential line passes through a point in the image.
+The function initialises an array called the accumulator. This array serves as a voting space, with cells corresponding to different combinations of rho (distance from the origin) and theta (angle from the horizontal axis). Each cell accumulates votes whenever a potential line passes through a point in the image.
 For every edge pixel in the input image, the function iterates through a range of theta values, effectively generating potential lines passing through that edge point. It then computes the corresponding rho value for each theta and increments the accumulator at the corresponding (rho, theta) indices. This process is repeated for all edge pixels, accumulating votes for potential lines.
 After the voting process, the function identifies peaks in the accumulator array with a given threshold.
 The function converts the peak indices into actual rho-theta pairs, which represent lines in polar coordinates and returns the detected line.
@@ -84,6 +76,18 @@ find_longest_group function finds the longest group of lines among the grouped l
 
 Drawing Mean Line: 
 draw_mean_line function calculates the mean line from a group of lines and draws it on the frame. It takes the frame and a list of lines (lines) as inputs. The mean line is calculated based on the mean rho and theta values of the input lines. 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
