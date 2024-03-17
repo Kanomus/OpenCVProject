@@ -2,6 +2,7 @@ import cv2
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 class treeNode():
     def __init__(self, locationX, locationY):
@@ -39,12 +40,15 @@ class RRTAlgorithm():
     
     def steerToPoint(self, locationStart, locationEnd):
         offset = self.rho*self.unitVector(locationStart, locationEnd)
-        point = np.array([locationStart.locationX + offset[0], locationStart.locationY + offset[1]])
+        point = np.array([locationStart.locationX + offset[0], locationStart.locationY + offset[1]], dtype=int)
         if point[0] >= grid.shape[1]:
-            point[0] = grid.shape[1]-1
+            point[0] = grid.shape[1]-self.rho
         if point[1] >= grid.shape[0]:
-            point[1] = grid.shape[0]-1
-        return point
+            point[1] = grid.shape[0]-self.rho
+        if grid[point[1], point[0]]!=0:
+            return point
+        else:
+            return np.array([-1, -1])
     
     #check if obstacle lies between the start node and end point of the edge
     def isInObstacle(self, locationStart, locationEnd):
@@ -105,7 +109,10 @@ class RRTAlgorithm():
         self.retraceRRTPath(goal.parent)
         
 #Loading the image
-gray_image = cv2.imread("mapkgp.png", 0)
+my_path = os.path.abspath(os.path.dirname(__file__))
+path = os.path.join(my_path, "mapkgp.png")
+image = cv2.imread(path, 1)
+gray_image = cv2.imread(path, 0)
 kernel = np.ones((5, 5), np.uint8) 
 img_dia = cv2.dilate(gray_image, kernel, iterations=1) 
 
@@ -114,14 +121,46 @@ threshold_value = 254
 _, grid = cv2.threshold(img_dia, threshold_value, 255, cv2.THRESH_BINARY)
 
 # Define parameters
-start = np.array([270,369]) # Starting point
-goal = np.array([811,403])  # Goal point
+# start = np.array([270,369]) # Starting point
+# goal = np.array([811,403])  # Goal point
+def drawPoints(img, start=None, goal=None):
+        if start is not None:
+            cv2.circle(img, center=start, radius=5, color=(0,0,255), thickness=2)
+            cv2.circle(img, center=start, radius=1, color=(0,0,255), thickness=2)
+        if goal is not None:
+            cv2.circle(img, center=goal, radius=5, color=(255,0,0), thickness=2)
+            cv2.circle(img, center=goal, radius=1, color=(255,0,0), thickness=2)
+
+def Capture_Event(event, x, y, flags, params):
+    global start, goal
+    if event == cv2.EVENT_LBUTTONDOWN:
+        image_copy=image.copy()
+        start = np.array([x,y])
+        drawPoints(image_copy, start, goal)
+        cv2.imshow('image', image_copy)
+
+    elif event == cv2.EVENT_RBUTTONDOWN:
+        image_copy=image.copy()
+        goal = np.array([x,y])
+        drawPoints(image_copy, start, goal)
+        cv2.imshow('image', image_copy)
+     
+cv2.imshow('image', image)
+# Set the Mouse Callback function, and call
+# the Capture_Event function.
+cv2.setMouseCallback('image', Capture_Event)
+# Press any key to exit
+if cv2.waitKey(0) ==13 and goal is not None and start is not None:
+    
+# Destroy all the windows
+    cv2.destroyAllWindows()
+
 
 stepSize = 15
 goalRegion = plt.Circle((goal[0], goal[1]), stepSize, color='b', fill = False)
 
 fig = plt.figure("RRT Algorithm")
-plt.imshow(grid, cmap='gray')
+plt.imshow(image, cmap='gray')
 plt.plot(start[0], start[1], 'ro')
 plt.plot(goal[0], goal[1], 'bo')
 ax = fig.gca()
@@ -141,16 +180,17 @@ while True:
     point = rrt.sampleAPoint()
     rrt.findNearest (rrt.randomTree, point)
     new = rrt.steerToPoint(rrt.nearestNode, point)
-    bool = rrt.isInObstacle(rrt.nearestNode, new)
-    if (bool == False):
-        rrt.addChild(new[0], new[1])
-        plt.pause(0.10)
-        plt.plot([rrt.nearestNode.locationX, new[0]], [rrt.nearestNode.locationY, new[1]], 'go',markersize = 2, linestyle="--")
-        #if goal found, append to path
-        if (rrt.goalFound(new)):
-            rrt.addChild(goal[0], goal[1])
-            print("Goal found!")
-            break
+    if np.any(new != -1):
+        bool = rrt.isInObstacle(rrt.nearestNode, new)
+        if (bool == False):
+            rrt.addChild(new[0], new[1])
+            plt.pause(0.10)
+            plt.plot([rrt.nearestNode.locationX, new[0]], [rrt.nearestNode.locationY, new[1]], 'go',markersize = 2, linestyle="--")
+            #if goal found, append to path
+            if (rrt.goalFound(new)):
+                rrt.addChild(goal[0], goal[1])
+                print("Goal found!")
+                break
         
 #trace back the path returned, and add start to waypoints
 rrt.retraceRRTPath(rrt.goal)
@@ -165,4 +205,3 @@ for i in range(len(rrt.Waypoints)-1):
     plt.pause(0.10)
     
 cv2.waitKey(3000)
- 
