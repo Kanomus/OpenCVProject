@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import sobeledge
+import edgedetection
 import os
 import hough
 
@@ -27,7 +28,13 @@ while True:
     resized_img = cv2.resize(img, None, fx=0.5, fy=0.5)
     foreground_mask = subtractor.apply(resized_img)
     eroded_mask = cv2.erode(foreground_mask, np.ones((3, 3), np.uint8), iterations=2)
-    edges = sobeledge.sobel_edge_detection(eroded_mask)
+    
+    #The first edges implementation which uses sobeledge is faster, but gives less accurate results
+    #The second edges implementation which uses edgedetection is slower but gives more accurate results
+    
+    #edges = sobeledge.sobel_edge_detection(eroded_mask)
+    edges = edgedetection.detectedges(eroded_mask)
+
     new_img = np.zeros_like(resized_img)
 
     # Fine-tune the threshold for better line detection
@@ -46,6 +53,8 @@ while True:
 
 
     if cv2.waitKey(30) & 0xFF == ord('q'):
+        break
+    if cv2.waitKey(30) & 0xFF == 27:
         break
 
 vid.release()
