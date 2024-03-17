@@ -7,7 +7,7 @@ import hough
 my_path = os.path.abspath(os.path.dirname(__file__))
 filenumber = str(input("Which video to open? (1, 2, or 3):\n"))
 
-path = os.path.join(my_path, "Videos",filenumber+".mp4")
+path = os.path.join(my_path, "..", "Videos",filenumber+".mp4")
 vid = cv2.VideoCapture(path)              #video input
 
 subtractor= cv2.createBackgroundSubtractorKNN()     #creating subtractor object
